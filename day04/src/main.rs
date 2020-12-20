@@ -57,8 +57,10 @@ impl FieldType {
     }
 
     fn int_in_range(value: &str, min: i32, max: i32) -> bool {
-        let int_value: i32 = value.parse().unwrap_or(0);
-        int_value >= min && int_value <= max
+        match value.parse::<i32>() {
+            Ok(int_value) => int_value >= min && int_value <= max,
+            Err(_) => false,
+        }
     }
 }
 
@@ -96,6 +98,7 @@ impl Passport {
         let mut fields_valid = true;
 
         for (field_type, value) in self.fields.iter() {
+            println!("Validating value {} for field {:?}", value, field_type);
             fields_valid &= field_type.validate(value.as_str());
         }
 
@@ -158,19 +161,26 @@ mod tests {
     #[test]
     fn test_is_valid() {
         // all 8
-        let all_8 = vec![Byr, Iyr, Eyr, Hgt, Hcl, Ecl, Pid, Cid];
         let mut all8_passport = Passport::new();
-        all_8
-            .iter()
-            .for_each(|&f| all8_passport.add_field(f, String::from("x")));
+        all8_passport.add_field(FieldType::Byr, "2002".to_string());
+        all8_passport.add_field(FieldType::Iyr, "2012".to_string());
+        all8_passport.add_field(FieldType::Eyr, "2020".to_string());
+        all8_passport.add_field(FieldType::Hgt, "165cm".to_string());
+        all8_passport.add_field(FieldType::Hcl, "#123abc".to_string());
+        all8_passport.add_field(FieldType::Ecl, "brn".to_string());
+        all8_passport.add_field(FieldType::Pid, "000000001".to_string());
+        all8_passport.add_field(FieldType::Cid, "somewhere".to_string());
         assert!(all8_passport.is_valid());
 
         // all reqd fields (missing cid)
-        let all_reqd = vec![Byr, Iyr, Eyr, Hgt, Hcl, Ecl, Pid];
         let mut all_reqd_passport = Passport::new();
-        all_reqd
-            .iter()
-            .for_each(|&f| all_reqd_passport.add_field(f, String::from("x")));
+        all_reqd_passport.add_field(FieldType::Byr, "2002".to_string());
+        all_reqd_passport.add_field(FieldType::Iyr, "2012".to_string());
+        all_reqd_passport.add_field(FieldType::Eyr, "2020".to_string());
+        all_reqd_passport.add_field(FieldType::Hgt, "165cm".to_string());
+        all_reqd_passport.add_field(FieldType::Hcl, "#123abc".to_string());
+        all_reqd_passport.add_field(FieldType::Ecl, "brn".to_string());
+        all_reqd_passport.add_field(FieldType::Pid, "000000001".to_string());
         assert!(all_reqd_passport.is_valid());
     }
 
