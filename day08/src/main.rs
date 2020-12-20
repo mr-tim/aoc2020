@@ -1,6 +1,6 @@
 use std::env;
 use std::fs::File;
-use std::io::{BufReader, BufRead};
+use std::io::{BufRead, BufReader};
 
 #[derive(Clone, Copy, Debug)]
 enum Op {
@@ -34,7 +34,7 @@ impl Cpu {
         Cpu {
             acc: 0,
             pos: 0,
-            program
+            program,
         }
     }
 
@@ -44,7 +44,7 @@ impl Cpu {
         match op {
             Op::Acc(value) => self.acc += value,
             Op::Jmp(value) => self.pos = (self.pos as i32 + value - 1) as usize,
-            _ => {},
+            _ => {}
         }
     }
 
@@ -67,12 +67,13 @@ fn main() {
 
     let file = File::open(args.get(1).unwrap()).unwrap();
 
-    let program: Vec<Op> = BufReader::new(file).lines().filter_map(|r| {
-        match r {
+    let program: Vec<Op> = BufReader::new(file)
+        .lines()
+        .filter_map(|r| match r {
             Ok(line) => Some(Op::parse(line)),
-            _ => None
-        }
-    }).collect();
+            _ => None,
+        })
+        .collect();
 
     let mut cpu = Cpu::new(program.clone());
     cpu.run();
@@ -85,16 +86,13 @@ fn main() {
                 let mut fixed = program.clone();
                 fixed[i] = Op::Jmp(*value);
                 fixed
-            },
+            }
             Op::Jmp(value) => {
                 let mut fixed = program.clone();
                 fixed[i] = Op::Nop(*value);
                 fixed
-
-            },
-            Op::Acc(_) => {
-                program.clone()
-            },
+            }
+            Op::Acc(_) => program.clone(),
         };
 
         let mut cpu = Cpu::new(fixed);

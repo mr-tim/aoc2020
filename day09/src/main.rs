@@ -1,6 +1,6 @@
 use std::env;
 use std::fs::File;
-use std::io::{BufReader, BufRead};
+use std::io::{BufRead, BufReader};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -12,13 +12,13 @@ fn main() {
 
     let preamble_size: usize = args.get(2).unwrap().parse().unwrap();
 
-    let values: Vec<i64> = BufReader::new(file).lines()
-        .filter_map(|r| {
-            match r {
-                Ok(line) => Some(line.parse().unwrap()),
-                _ => None
-            }
-        }).collect();
+    let values: Vec<i64> = BufReader::new(file)
+        .lines()
+        .filter_map(|r| match r {
+            Ok(line) => Some(line.parse().unwrap()),
+            _ => None,
+        })
+        .collect();
 
     let invalid = find_invalid_value(preamble_size, values.clone());
     if invalid <= 0 {
@@ -33,9 +33,9 @@ fn main() {
             let s = &values[start..end];
             let min = s.iter().min().unwrap();
             let max = s.iter().max().unwrap();
-            println!("Part 2: Found {} + {} => {}", min, max, min+max);
-        },
-        None => panic!("Failed to find range for invalid values!")
+            println!("Part 2: Found {} + {} => {}", min, max, min + max);
+        }
+        None => panic!("Failed to find range for invalid values!"),
     };
 }
 
@@ -48,13 +48,16 @@ fn find_invalid_range(values: &Vec<i64>, invalid: i64) -> Option<(usize, usize)>
             length += 1;
             if length >= 2 {
                 if total == invalid {
-                    println!("Found run of invalids from {} with length {}", start, length);
-                    return Some((start, start+length));
+                    println!(
+                        "Found run of invalids from {} with length {}",
+                        start, length
+                    );
+                    return Some((start, start + length));
                 }
             }
         }
     }
-    return None
+    return None;
 }
 
 fn find_invalid_value(preamble_size: usize, values: Vec<i64>) -> i64 {
