@@ -155,7 +155,6 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use crate::FieldType::*;
     use crate::{FieldType, Passport};
 
     #[test]
