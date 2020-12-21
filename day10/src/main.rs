@@ -29,7 +29,10 @@ fn main() {
         ones * threes
     );
 
-    println!("Part 2: {} arrangements", count_arrangements(&output_joltages));
+    println!(
+        "Part 2: {} arrangements",
+        count_arrangements(&output_joltages)
+    );
 }
 
 fn chain_adapters(adapters: &Vec<i32>) -> (i32, i32, i32) {
@@ -71,16 +74,16 @@ fn count_arrangements(adapters: &Vec<i32>) -> i64 {
     sorted_adapters.push(target as i32);
     sorted_adapters.sort();
 
-    let mut counts = vec![0; target+1];
+    let mut counts = vec![0; target + 1];
     counts[0] = 1;
 
     for i in sorted_adapters.iter() {
         if *i == 0 {
-            continue
+            continue;
         }
-        counts[*i as usize] = count_or_zero(&counts, i-1)
-            + count_or_zero(&counts, i-2)
-            + count_or_zero(&counts, i-3);
+        counts[*i as usize] = count_or_zero(&counts, i - 1)
+            + count_or_zero(&counts, i - 2)
+            + count_or_zero(&counts, i - 3);
     }
 
     // recursive attempt
