@@ -246,6 +246,10 @@ fn main() {
     let file = File::open(args.get(1).unwrap()).unwrap();
 
     let template_seating = Seating::load_from_file(file);
+    println!("Loaded seating:");
+    template_seating.display();
+    println!();
+    template_seating.display_neighbour_counts();
 
     let mut count = 0;
 
