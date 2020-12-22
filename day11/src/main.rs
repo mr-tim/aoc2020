@@ -62,7 +62,7 @@ impl Seating {
         }
     }
 
-    fn update(&mut self, updater: fn (&Seating, usize, usize) -> Cell) -> bool {
+    fn update(&mut self, updater: fn(&Seating, usize, usize) -> Cell) -> bool {
         let mut updated = false;
         let mut updated_cells = Vec::new();
         for y in 0..self.height {
@@ -116,7 +116,7 @@ impl Seating {
                 if dx == 0 && dy == 0 {
                     continue;
                 }
-                
+
                 let mut step = 1;
                 'search: loop {
                     let new_x = x as i32 + (step * dx);
@@ -129,13 +129,11 @@ impl Seating {
                             Cell::OccupiedSeat => {
                                 total += 1;
                                 break 'search;
-                            },
-                            Cell::EmptySeat => {
-                                break 'search
-                            },
+                            }
+                            Cell::EmptySeat => break 'search,
                             Cell::Floor => {
                                 step += 1;
-                            },
+                            }
                         }
                     }
                 }
@@ -146,10 +144,7 @@ impl Seating {
     }
 
     fn invalid_cell(&self, x: i32, y: i32) -> bool {
-        y < 0
-        || y >= self.height as i32
-        || x < 0
-        || x >= self.width as i32
+        y < 0 || y >= self.height as i32 || x < 0 || x >= self.width as i32
     }
 
     fn display(&self) {
@@ -196,7 +191,6 @@ impl Seating {
     }
 }
 
-
 fn update_neighbour_count(s: &Seating, x: usize, y: usize) -> Cell {
     match s.cells[s.index(x, y)] {
         Cell::OccupiedSeat => {
@@ -225,14 +219,14 @@ fn update_visible_neighbours(s: &Seating, x: usize, y: usize) -> Cell {
             } else {
                 Cell::OccupiedSeat
             }
-        },
+        }
         Cell::EmptySeat => {
             if s.visible_neighbours(x, y) == 0 {
                 Cell::OccupiedSeat
             } else {
                 Cell::EmptySeat
             }
-        },
+        }
         Cell::Floor => Cell::Floor,
     }
 }

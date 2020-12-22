@@ -1,8 +1,8 @@
+use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
-use std::fs::File;
 
-#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 enum Command {
     N(usize),
     S(usize),
@@ -43,7 +43,7 @@ fn load_commands(f: File) -> Vec<Command> {
 struct Position {
     x: i32,
     y: i32,
-    heading: i32
+    heading: i32,
 }
 
 impl Position {
@@ -63,8 +63,8 @@ impl Position {
                 _ => {
                     println!("Oops, heading = {}", self.heading);
                     panic!("invalid heading!")
-                },
-            }
+                }
+            },
         }
     }
 
@@ -72,7 +72,7 @@ impl Position {
         (self.x.abs() + self.y.abs()) as usize
     }
 
-    fn rotate(&mut self, angle: i32)  {
+    fn rotate(&mut self, angle: i32) {
         let (old_x, old_y) = (self.x, self.y);
 
         let (c, s) = match angle {
@@ -83,11 +83,11 @@ impl Position {
             90 => (0, 1),
             180 => (-1, 0),
             270 => (0, -1),
-            _ => panic!("invalid angle")
+            _ => panic!("invalid angle"),
         };
 
-        self.x = c*old_x - s*old_y;
-        self.y = s*old_x + c*old_y;
+        self.x = c * old_x - s * old_y;
+        self.y = s * old_x + c * old_y;
     }
 }
 
@@ -98,7 +98,7 @@ fn main() {
     }
     let f = File::open(args.get(1).unwrap()).unwrap();
     let cmds = load_commands(f);
-    let mut pos = Position{
+    let mut pos = Position {
         x: 0,
         y: 0,
         heading: 90,
@@ -108,8 +108,16 @@ fn main() {
 
     println!("Part 1: manhattan distance: {}", pos.manhattan_distance());
 
-    let mut waypoint_pos = Position{x: 10, y: 1, heading: 0};
-    let mut ship_pos = Position{x: 0, y: 0, heading: 0};
+    let mut waypoint_pos = Position {
+        x: 10,
+        y: 1,
+        heading: 0,
+    };
+    let mut ship_pos = Position {
+        x: 0,
+        y: 0,
+        heading: 0,
+    };
 
     cmds.iter().for_each(|cmd| {
         match cmd {
@@ -117,24 +125,23 @@ fn main() {
                 let m = *value as i32;
                 ship_pos.x = ship_pos.x + m * waypoint_pos.x;
                 ship_pos.y = ship_pos.y + m * waypoint_pos.y;
-            },
-            Command::L(value) => {
-                waypoint_pos.rotate(*value as i32)
-            },
-            Command::R(value) => {
-                waypoint_pos.rotate(-(*value as i32))
-            },
-            _ => waypoint_pos.execute(*cmd)
+            }
+            Command::L(value) => waypoint_pos.rotate(*value as i32),
+            Command::R(value) => waypoint_pos.rotate(-(*value as i32)),
+            _ => waypoint_pos.execute(*cmd),
         }
         // println!("ship: {}, {}, waypoint: {}, {}", ship_pos.x, ship_pos.y, waypoint_pos.x, waypoint_pos.y);
     });
 
-    println!("Part 2: manhattan distance: {}", ship_pos.manhattan_distance());
+    println!(
+        "Part 2: manhattan distance: {}",
+        ship_pos.manhattan_distance()
+    );
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{Command, Position, load_commands};
+    use crate::{load_commands, Command, Position};
     use std::fs::File;
 
     #[test]
@@ -152,7 +159,7 @@ mod tests {
     fn test_execution() {
         let f = File::open("sample.txt").unwrap();
         let commands = load_commands(f);
-        let mut pos = Position{
+        let mut pos = Position {
             x: 0,
             y: 0,
             heading: 90,
@@ -164,5 +171,4 @@ mod tests {
         assert_eq!(pos.y, -8);
         assert_eq!(pos.manhattan_distance(), 25);
     }
-
 }
